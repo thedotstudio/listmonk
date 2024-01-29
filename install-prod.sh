@@ -84,17 +84,22 @@ generate_password(){
 
 get_config() {
 	info "fetching config.toml from listmonk repo"
-	download https://raw.githubusercontent.com/knadh/listmonk/master/config.toml.sample config.toml
+	download https://raw.githubusercontent.com/thedotstudio/listmonk/master/config.toml.sample config.toml
 }
 
 get_containers() {
 	info "fetching docker-compose.yml from listmonk repo"
-	download https://raw.githubusercontent.com/knadh/listmonk/master/docker-compose.yml docker-compose.yml
+	download https://raw.githubusercontent.com/thedotstudio/listmonk/master/docker-compose.yml docker-compose.yml
 }
 
 modify_config(){
 	info "generating a random password"
 	db_password=$(generate_password)
+
+	
+	info "generating a random password for admin"
+	listmonk_admin_password=$(generate_password)
+	echo $listmonk_admin_password
 
 	info "modifying config.toml"
 	# Replace `db.host=localhost` with `db.host=db` in config file.
@@ -102,6 +107,10 @@ modify_config(){
 	# Replace `db.password=listmonk` with `db.password={{db_password}}` in config file.
 	# Note that `password` is wrapped with `\b`. This ensures that `admin_password` doesn't match this pattern instead.
 	sed $SED_INPLACE "s/\bpassword\b = \"listmonk\"/password = \"$db_password\"/g" config.toml
+
+	#  Replace `db.password=listmonk` with `db.password={{db_password}}` in config file.
+	sed $SED_INPLACE "s/\badmin_password\b = \"listmonk\"/admin_password = \"$listmonk_admin_password\"/g" config.toml
+
 	# Replace `app.address=localhost:9000` with `app.address=0.0.0.0:9000` in config file.
 	sed $SED_INPLACE "s/address = \"localhost:9000\"/address = \"0.0.0.0:9000\"/g" config.toml
 
