@@ -53,3 +53,22 @@ listmonk is a free and open source software licensed under AGPLv3. If you are in
 
 ## License
 listmonk is licensed under the AGPL v3 license.
+
+# On Issues
+In case the server falls down, it won’t simply get up by running `sudo docker compose up`
+
+That doesn’t mean that the data is gone. it is still there (most likely  `/var/lib/docker/volumes/listmonk_listmonk-data` ). It is just that the new docker compose up is not able to pick that volume. 
+
+Therefore it is extremely important to NOT RUN ANY COMMAND WHICH TOUCHES DOCKER VOLUMES like volume prune or `sudo docker compose down -v` etc 
+
+you have to run 
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/thedotstudio/listmonk/master/update-prod-db.sh)"
+```
+
+after running this you can run `sudo docker compose up -d` and it should work
+
+[way to restore from the backup is coming soon]
+
+
