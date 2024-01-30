@@ -49,8 +49,8 @@ check_dependencies() {
 check_existing_db_volume() {
 	info "checking for an existing docker db volume"
 	if docker volume inspect listmonk_listmonk-data >/dev/null 2>&1; then
-		error "listmonk-data volume already exists. Please use docker compose down -v to remove old volumes for a fresh setup of PostgreSQL."
-		exit 1
+		info "listmonk-data volume already exists. using same volume"
+		run_migrations
 	fi
 }
 
@@ -88,5 +88,5 @@ run_migrations(){
 
 check_dependencies
 check_existing_db_volume
-run_migrations
+
 
